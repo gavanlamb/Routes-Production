@@ -1,0 +1,140 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Stack for all haplo.com.au dns records, does not include child zones
+Outputs:
+    ZoneId:
+        Description: Id of the zone
+        Value:
+            Ref: Zone
+        Export:
+            Name: HaploRoutesProduction:ZoneId
+Resources:
+    Zone:
+        DeletionPolicy: Retain
+        Type: AWS::Route53::HostedZone
+        Properties:
+            Name: haplo.com.au.
+    GoogleDMarc:
+        DeletionPolicy: Retain
+        Type: AWS::Route53::RecordSetGroup
+        Properties:
+            HostedZoneId:
+                Ref: Zone
+            RecordSets:
+                -   Name: _dmarc.haplo.com.au.
+                    Type: TXT
+                    TTL: '300'
+                    ResourceRecords:
+                        - '"v=DMARC1; p=quarantine\; pct=100\; rua=mailto:postmaster@haplo.com.au"'
+    GoogleDomainKey:
+        DeletionPolicy: Retain
+        Type: AWS::Route53::RecordSetGroup
+        Properties:
+            HostedZoneId:
+                Ref: Zone
+            RecordSets:
+                -   Name: google._domainkey.haplo.com.au.
+                    Type: TXT
+                    TTL: '300'
+                    ResourceRecords:
+                        - '"v=DKIM1; k=rsa; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCl81OBy03sM6AAs/nNDUTz+HNlHYeYZ7BE+V3UBKknKhErOkgvfLfDMmG3rcoD00htoWRAJfZ21n+nYmlHh4ke2QMYnZcpUPmRGw0ZBngFys0Gdg6YdKMtlsxOUY3rqfApDpV/EvW5oplefKWYddKEiQoncuCkdUeTAV6LddaUqQIDAQAB"'
+    GoogleHosted:
+        DeletionPolicy: Retain
+        Type: AWS::Route53::RecordSetGroup
+        Properties:
+            HostedZoneId:
+                Ref: Zone
+            RecordSets:
+                -   Name: i62sj4jyri7c.haplo.com.au.
+                    Type: CNAME
+                    TTL: '300'
+                    ResourceRecords:
+                        - gv-qa3usdr35nshmr.dv.googlehosted.com
+    GoogleMx:
+        DeletionPolicy: Retain
+        Type: AWS::Route53::RecordSetGroup
+        Properties:
+            HostedZoneId:
+                Ref: Zone
+            RecordSets:
+                -   Name: haplo.com.au.
+                    Type: MX
+                    TTL: '300'
+                    ResourceRecords:
+                        - 5 ALT2.ASPMX.L.GOOGLE.COM.
+                        - 5 ALT1.ASPMX.L.GOOGLE.COM.
+                        - 1 ASPMX.L.GOOGLE.COM.
+                        - 10 ALT3.ASPMX.L.GOOGLE.COM.
+                        - 10 ALT4.ASPMX.L.GOOGLE.COM.
+    GoogleSpf:
+        DeletionPolicy: Retain
+        Type: AWS::Route53::RecordSetGroup
+        Properties:
+            HostedZoneId:
+                Ref: Zone
+            RecordSets:
+                -   Name: haplo.com.au.
+                    Type: TXT
+                    TTL: '300'
+                    ResourceRecords:
+                        - '"v=spf1 include:_spf.google.com ~all"'
+    All:
+        DeletionPolicy: Retain
+        Type: AWS::Route53::RecordSetGroup
+        Properties:
+            HostedZoneId:
+                Ref: Zone
+            RecordSets:
+                -   Name: "*.haplo.com.au."
+                    Type: A
+                    TTL: '300'
+                    ResourceRecords:
+                        - 54.252.242.62
+    MxTxt:
+        DeletionPolicy: Retain
+        Type: AWS::Route53::RecordSetGroup
+        Properties:
+            HostedZoneId:
+                Ref: Zone
+            RecordSets:
+                -   Name: "@.haplo.com.au."
+                    Type: TXT
+                    TTL: '300'
+                    ResourceRecords:
+                        - '"google-site-verification=9aIjH0n50JOjjWW9Gef7S5n5qeh3GVBb49mjjBu7fcc"'
+    SendgridCname:
+        DeletionPolicy: Retain
+        Type: AWS::Route53::RecordSetGroup
+        Properties:
+            HostedZoneId:
+                Ref: Zone
+            RecordSets:
+                -   Name: 13136940.haplo.com.au.
+                    Type: CNAME
+                    TTL: '300'
+                    ResourceRecords:
+                        - sendgrid.net
+    SendgridDomainKey:
+        DeletionPolicy: Retain
+        Type: AWS::Route53::RecordSetGroup
+        Properties:
+            HostedZoneId:
+                Ref: Zone
+            RecordSets:
+                -   Name: m1._domainkey.haplo.com.au.
+                    Type: TXT
+                    TTL: '300'
+                    ResourceRecords:
+                        - '"k=rsa; t=s; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCxdDh67zR18O96o2/1WvjwYpGdAZiTUFKEZFWnZabWmR6rhEAa+yGzTrQWDEnCA0BBafWvCit1CTzCWpen9oogei10xtBNXq47zlBYMJp5M29J5VifI65/cOEJzHyzMEWQtZ9Qb7sWJXOMV93IVpl71Brvj2z3C3VmIfrxexF2awIDAQAB"'
+    SendgridSpf:
+        DeletionPolicy: Retain
+        Type: AWS::Route53::RecordSetGroup
+        Properties:
+            HostedZoneId:
+                Ref: Zone
+            RecordSets:
+                -   Name: em5637.haplo.com.au.
+                    Type: TXT
+                    TTL: '300'
+                    ResourceRecords:
+                        - '"v=spf1 include:sendgrid.net ~all"'
